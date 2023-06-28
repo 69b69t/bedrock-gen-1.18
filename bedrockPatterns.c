@@ -26,9 +26,9 @@ static inline double lerpFromProgress(double lerpValue, double lerpStart, double
     return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
 }
 
-static long hashCode(int x, int y, int z) {
-    long l = (long)(x * 3129871) ^ (long)z * 116129781L ^ (long)y;
-    l = l * l * 42317861L + l * 11L;
+static uint64_t hashCode(int x, int y, int z) {
+    int64_t l = (int64_t)(x * 3129871) ^ ((int64_t)z * 116129781LL) ^ (int64_t)y;
+    l = l * l * 42317861L + l * 11LL;
     return l >> 16;
 }
 //end helper functions
@@ -40,17 +40,17 @@ static inline uint64_t rotl64(uint64_t x, uint8_t b)
     return (x << b) | (x >> (64-b));
 }
 
-static inline long nextLong(Xrng *xr) {
-    long l = xr->low;
-    long m = xr->high;
-    long n = rotl64(l + m, 17) + l;
+static inline uint64_t nextLong(Xrng *xr) {
+    uint64_t l = xr->low;
+    uint64_t m = xr->high;
+    uint64_t n = rotl64(l + m, 17) + l;
     xr->low = rotl64(l, 49) ^ (m ^= l) ^ m << 21;
     xr->high = rotl64(m, 28);
     return n;
 }
 
-static inline long next(Xrng *xr, int bits) {
-    return (uint64_t)nextLong(xr) >> (64 - bits);
+static inline uint64_t next(Xrng *xr, int bits) {
+    return nextLong(xr) >> (64 - bits);
 }
 
 static inline float nextFloat(Xrng *xr)
@@ -58,30 +58,30 @@ static inline float nextFloat(Xrng *xr)
     return (float)next(xr, 24) * 5.9604645E-8f;
 }
 
-static long nextSplitMix64Int(long seed) {
-    seed = (long)(seed ^ ((uint64_t)seed >> 30)) * -4658895280553007687LL;
-    seed = (long)(seed ^ ((uint64_t)seed >> 27)) * -7723592293110705685LL;
-    return seed ^ (long)((uint64_t)seed >> 31);
+static uint64_t nextSplitMix64Int(uint64_t seed) {
+    seed = (seed ^ (seed >> 30)) * -4658895280553007687LL;
+    seed = (seed ^ (seed >> 27)) * -7723592293110705685LL;
+    return seed ^ (seed >> 31);
 }
 
-static void createXoroshiroSeed(Xrng *xr, long seed) {
-    long l = seed ^ 0x6A09E667F3BCC909L;
-    long m = l - 7046029254386353131L;
+static void createXoroshiroSeed(Xrng *xr, uint64_t seed) {
+    uint64_t l = seed ^ 0x6A09E667F3BCC909L;
+    uint64_t m = l - 7046029254386353131L;
     xr->low = nextSplitMix64Int(l);
     xr->high = nextSplitMix64Int(m);
 }
 
 static void createRandomDeriver(Xrng *xr)
 {
-    long low;
+    uint64_t low;
     low = nextLong(xr);
     xr->high = nextLong(xr);
     xr->low = low;
 }
 
 void createRandom(Xrng* randomDeriver, Pos3d pos) {
-    long l = hashCode(pos.x, pos.y, pos.z);
-    long m = l ^ randomDeriver->low;
+    uint64_t l = hashCode(pos.x, pos.y, pos.z);
+    uint64_t m = l ^ randomDeriver->low;
     randomDeriver->low = m;
 }
 
@@ -121,7 +121,7 @@ int isBedrock(Pos3d pos) {
 
         Xrng randomDeriver;
 
-        createXoroshiroSeed(&randomDeriver, 694201337);
+        createXoroshiroSeed(&randomDeriver, 3773983928257503317ULL);
         createRandomDeriver(&randomDeriver);
         createRandomString(&randomDeriver, "minecraft:bedrock_floor");
         createRandomDeriver(&randomDeriver);
@@ -138,9 +138,9 @@ int main()
     Pos3d pos;
     pos.y = -60;
 
-    for(pos.z = 0; pos.z < 20; pos.z++)
+    for(pos.z = -15; pos.z < 15; pos.z++)
     {
-        for(pos.x = 0; pos.x < 20; pos.x++)
+        for(pos.x = -15; pos.x < 15; pos.x++)
         {
             if(isBedrock(pos))
             {
