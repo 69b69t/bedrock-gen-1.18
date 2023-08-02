@@ -26,10 +26,11 @@ static inline double lerpFromProgress(double lerpValue, double lerpStart, double
     return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
 }
 
-static uint64_t hashCode(int x, int y, int z) {
-    int64_t l = (int64_t)(x * 3129871) ^ ((int64_t)z * 116129781LL) ^ (int64_t)y;
-    l = l * l * 42317861L + l * 11LL;
-    return l >> 16;
+static long hashCode(int x, int y, int z)
+{
+    long i = (long)(3129871U * x) ^ ((long)z * 116129781L) ^ (long)y;
+    i = i * i * 42317861L + i * 11L;
+    return i >> 16;
 }
 //end helper functions
 
@@ -40,12 +41,14 @@ static inline uint64_t rotl64(uint64_t x, uint8_t b)
     return (x << b) | (x >> (64-b));
 }
 
-static inline uint64_t nextLong(Xrng *xr) {
+static inline uint64_t nextLong(Xrng *xr)
+{
     uint64_t l = xr->low;
-    uint64_t m = xr->high;
-    uint64_t n = rotl64(l + m, 17) + l;
-    xr->low = rotl64(l, 49) ^ (m ^= l) ^ m << 21;
-    xr->high = rotl64(m, 28);
+    uint64_t h = xr->high;
+    uint64_t n = rotl64(l + h, 17) + l;
+    h ^= l;
+    xr->low = rotl64(l, 49) ^ h ^ (h << 21);
+    xr->high = rotl64(h, 28);
     return n;
 }
 
@@ -111,45 +114,44 @@ void createRandomString(Xrng *xr, char *str)
 //end rng functions
 
 
-int isBedrock(Pos3d pos) {
-        if (pos.y == -64) {
-            return 1;
-        } else if (pos.y >= -59) {
-            return 0;
-        } else {
-        double var2x = lerpFromProgress(pos.y, -64, -59, 1.0, 0.0);
-
-        Xrng randomDeriver;
-
-        createXoroshiroSeed(&randomDeriver, 3773983928257503317ULL);
-        createRandomDeriver(&randomDeriver);
-        createRandomString(&randomDeriver, "minecraft:bedrock_floor");
-        createRandomDeriver(&randomDeriver);
-
-        createRandom(&randomDeriver, pos);
-        return (double)nextFloat(&randomDeriver) < var2x;
-    }
+int isBedrock(Pos3d pos, double density, Xrng skipRng)
+{
+    createRandom(&skipRng, pos);
+    return (double)nextFloat(&skipRng) < density;
 }
 
 int main()
 {
-    Xrng randomDeriver;
 
+    Xrng skipRng;
     Pos3d pos;
-    pos.y = -60;
+    //pos.y = -60;
 
-    for(pos.z = -15; pos.z < 15; pos.z++)
+
+    //overworld floor
+    double density = lerpFromProgress(pos.y, -64, -59, 1.0, 0.0);
+    
+    //nether floor
+    //double density = lerpFromProgress(pos.y, 0, 5, 1.0, 0.0);
+    
+    //nether roof
+    //double density = lerpFromProgress(pos.y, 127, 127-5, 1.0, 0.0);
+    
+    printf("%f\n", density);
+
+    createXoroshiroSeed(&skipRng, 694201337ULL);
+    createRandomDeriver(&skipRng);
+    createRandomString(&skipRng, "minecraft:bedrock_floor");
+    //createRandomString(&skipRng, "minecraft:bedrock_roof");
+    createRandomDeriver(&skipRng);
+
+
+    for(pos.z = 0; pos.z < 10; pos.z++)
     {
-        for(pos.x = -15; pos.x < 15; pos.x++)
+        for(pos.x = 0; pos.x < 10; pos.x++)
         {
-            if(isBedrock(pos))
-            {
-                printf(" #");
-            }
-            else
-            {
-                printf(" _");
-            }
+            if(isBedrock(pos, density, skipRng)) printf("# ");
+            else printf("_ ");
         }
         printf("\n");
     }
