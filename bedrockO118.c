@@ -125,24 +125,12 @@ int main()
 
     Xrng skipRng;
     Pos3d pos;
-    //pos.y = -60;
+    pos.y = -60;
 
-
-    //overworld floor
     double density = lerpFromProgress(pos.y, -64, -59, 1.0, 0.0);
-    
-    //nether floor
-    //double density = lerpFromProgress(pos.y, 0, 5, 1.0, 0.0);
-    
-    //nether roof
-    //double density = lerpFromProgress(pos.y, 127, 127-5, 1.0, 0.0);
-    
-    printf("%f\n", density);
-
     createXoroshiroSeed(&skipRng, 694201337ULL);
     createRandomDeriver(&skipRng);
     createRandomString(&skipRng, "minecraft:bedrock_floor");
-    //createRandomString(&skipRng, "minecraft:bedrock_roof");
     createRandomDeriver(&skipRng);
 
 
