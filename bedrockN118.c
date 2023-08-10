@@ -42,16 +42,6 @@ int64_t hashCode(int32_t x, int32_t y, int32_t z) {
     return l >> 16;
 }
 
-/*
-long hashCode(int x, int y, int z)
-{
-    long i = (long)(x * 3129871) ^ (long)z * 116129781ULL ^ (long)y;
-    i = i * i * 42317861ULL + i * 11ULL;
-    i >>= 16;
-    return i;
-}
-*/
-
 void atFunction(uint64_t *state, uint64_t worldSeed, int32_t x, int32_t y, int32_t z)
 {
     *state = hashCode(x, y, z);
@@ -75,8 +65,6 @@ int isBedrock(uint64_t worldSeed, int32_t x, int32_t y, int32_t z)
     uint64_t state;
     double density;
 
-
-    //get roof/floor seed
     worldSeed &= MASK48;
     setSeed(&state, worldSeed);
     state = nextLong(&state) & MASK48;
@@ -113,7 +101,7 @@ int main()
     {
         for(int i = 0; i < 8; i++)
         {
-            if(isBedrock(1442567685227760047ULL, j, 123, i)) printf("# ");
+            if(isBedrock(694201337ULL, j, 4, i)) printf("# ");
             else printf("_ ");
         }
         printf("\n");
