@@ -101,7 +101,7 @@ int main()
     {
         for(int i = 0; i < 8; i++)
         {
-            if(isBedrock(694201337ULL, j, 4, i)) printf("# ");
+            if(isBedrock(694201337ULL, i, 4, j)) printf("# ");
             else printf("_ ");
         }
         printf("\n");
