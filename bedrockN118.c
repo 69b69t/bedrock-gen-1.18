@@ -35,11 +35,11 @@ uint64_t nextLong(uint64_t *seed)
 {
     return ((uint64_t) next(seed, 32) << 32) + next(seed, 32);
 }
-
-int64_t hashCode(int32_t x, int32_t y, int32_t z) {
-    uint64_t l = (uint64_t)(x * 3129871) ^ ((uint64_t)z * 116129781ULL) ^ (uint64_t)y;
-    l = l * l * 42317861ULL + l * 11ULL;
-    return l >> 16;
+static int64_t hashCode(const int32_t x, const int32_t z)
+{
+    int64_t i = (int64_t)(int32_t)(3129871U * (uint32_t)x) ^ (int64_t)((uint64_t)z * 116129781ULL) ^ (int64_t)-60;
+    i = i * i * 42317861ULL + i * 11ULL;
+    return i >> 16;
 }
 
 void atFunction(uint64_t *state, uint64_t worldSeed, int32_t x, int32_t y, int32_t z)
