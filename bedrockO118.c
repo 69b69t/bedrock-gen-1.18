@@ -26,10 +26,10 @@ static inline double lerpFromProgress(double lerpValue, double lerpStart, double
     return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
 }
 
-static long hashCode(int x, int y, int z)
+static int64_t hashCode(const int32_t x, const int32_t z)
 {
-    long i = (long)(3129871U * x) ^ ((long)z * 116129781L) ^ (long)y;
-    i = i * i * 42317861L + i * 11L;
+    int64_t i = (int64_t)(int32_t)(3129871U * (uint32_t)x) ^ (int64_t)((uint64_t)z * 116129781ULL) ^ (int64_t)-60;
+    i = i * i * 42317861ULL + i * 11ULL;
     return i >> 16;
 }
 //end helper functions
